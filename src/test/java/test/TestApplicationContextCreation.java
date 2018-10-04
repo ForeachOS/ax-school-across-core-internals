@@ -87,7 +87,7 @@ public class TestApplicationContextCreation
 	 * <p>
 	 * This illustrates there can be subtle differences in when bean definitions are registered.
 	 *
-	 * @see #beanRegistrationConditionals()
+	 * @see #beanDefinitionOverriding()
 	 */
 	@Test
 	public void configurationClassForBeansRegistration() {
@@ -96,6 +96,25 @@ public class TestApplicationContextCreation
 
 		applicationContext.refresh();
 		assertTrue( beanFactory.containsBeanDefinition( "myComponent" ) );
+
+		applicationContext.stop();
+	}
+
+	/**
+	 * There are several ways to add bean definitions, though most common are using component scans and {@link Configuration} classes.
+	 * This sample illustrates manually adding a bean definition (something that has been made simpler in Spring FW 5), but there
+	 * is also a {@link org.springframework.context.annotation.ImportBeanDefinitionRegistrar} for example.
+	 *
+	 * @see #beanRegistrationConditionals()
+	 */
+	@Test
+	public void manualBeanDefinition() {
+		BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) beanFactory;
+		beanDefinitionRegistry.registerBeanDefinition( "manualBean", new RootBeanDefinition( MyComponent.class ) );
+
+		applicationContext.refresh();
+
+		assertTrue( applicationContext.getBean( "manualBean" ) instanceof MyComponent );
 
 		applicationContext.stop();
 	}
@@ -151,25 +170,6 @@ public class TestApplicationContextCreation
 
 			applicationContext.close();
 		}
-	}
-
-	/**
-	 * There are several ways to add bean definitions, though most common are using component scans and {@link Configuration} classes.
-	 * This sample illustrates manually adding a bean definition (something that has been made simpler in Spring FW 5), but there
-	 * is also a {@link org.springframework.context.annotation.ImportBeanDefinitionRegistrar} for example.
-	 *
-	 * @see #beanDefinitionOverriding()
-	 */
-	@Test
-	public void manualBeanDefinition() {
-		BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) beanFactory;
-		beanDefinitionRegistry.registerBeanDefinition( "manualBean", new RootBeanDefinition( MyComponent.class ) );
-
-		applicationContext.refresh();
-
-		assertTrue( applicationContext.getBean( "manualBean" ) instanceof MyComponent );
-
-		applicationContext.stop();
 	}
 
 	/**

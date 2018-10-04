@@ -8,6 +8,9 @@ import com.foreach.across.core.context.AcrossListableBeanFactory;
 import com.foreach.across.core.context.ExposedBeanDefinition;
 import com.foreach.across.school.internals.additionals.OtherComponentConfiguration;
 import com.foreach.across.school.internals.application.MyComponentConfiguration;
+import com.foreach.across.school.internals.modules.one.ModuleOne;
+import com.foreach.across.school.internals.modules.three.ModuleThree;
+import com.foreach.across.school.internals.modules.two.ModuleTwo;
 import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -50,10 +53,15 @@ public class TestAcrossContext
 		root.stop();
 	}
 
+	/**
+	 * Illustrates how modules are bootstrapped in order, based on their dependencies.
+	 */
 	@Test
 	public void simpleAcrossContextStarting() {
 		AcrossContext acrossContext = new AcrossContext();
-		acrossContext.addModule( new EmptyAcrossModule( "MyModule", OtherComponentConfiguration.class ) );
+		acrossContext.addModule( new ModuleTwo() );
+		acrossContext.addModule( new ModuleOne() );
+		acrossContext.addModule( new ModuleThree() );
 		acrossContext.bootstrap();
 		acrossContext.shutdown();
 	}
